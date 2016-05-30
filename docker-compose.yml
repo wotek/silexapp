@@ -1,0 +1,17 @@
+version: '2'
+services:
+  web:
+    build: .
+    volumes:
+      - ./app:/usr/src/slate/app
+  nginx:
+    image: nginx
+    volumes_from:
+      - web
+    links:
+      - web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
