@@ -1,4 +1,4 @@
-.PHONY: help run destroy build logs
+.PHONY: help run destroy build logs test
 
  HELP_FUN = \
 	%help; \
@@ -20,6 +20,9 @@ destroy: ## Destroys and cleans up containers
 
 build: ## Builds images
 	docker-compose build --force-rm --pull
+
+test: ## Run tests
+	docker-compose run --rm web bin/phpunit -c app/phpunit.xml --bootstrap vendor/autoload.php
 
 logs: ## Shows logs
 	docker-compose logs -f

@@ -1,10 +1,10 @@
 # Silex Dockerfile
 #
 # Version 0.0.1
-FROM php:5.5-fpm-alpine
+FROM php:5.6-fpm-alpine
 MAINTAINER Wojtek Zalewski <wojtek@neverbland.com>
 
-LABEL Description="This image is used to start the foobar executable" Vendor="ACME Products" Version="1.0"
+LABEL Description="This image is used to run Silex based apps" Vendor="Wtk" Version="0.0.1"
 
 # Port we are going to expose
 EXPOSE 8080
@@ -16,11 +16,26 @@ RUN apk update --update-cache
 RUN apk add \
     curl \
     git \
-    openssh
+    openssh \
+    autoconf \
+    build-base
 
 # Lets copy our php config
 COPY docker/php/php.ini /usr/local/etc/php/
 
+# Lets install few php modules
+RUN pecl install \
+    xdebug
+
+# Cleaning up
+RUN rm -rf \
+    /var/cache/apk/* \
+    /tmp/src
+
+# @todo: Revisit this
+# Now would be good time to add user which will run web-related stuff
+# instead of root, especially composer install ie.
+#
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -32,6 +47,12 @@ ADD app/composer.json /usr/src/slate
 
 # Install dependencies
 RUN composer install --prefer-dist --working-dir=/usr/src/slate
+
+# Enabling Xdebug
+# It's done bit later because of composer.
+# It has a major impact on runtime performance.
+# See https://getcomposer.org/xdebug
+RUN docker-php-ext-enable xdebug.so
 
 # Lets mount volumes
 VOLUME /usr/src/slate/app
