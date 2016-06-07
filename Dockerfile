@@ -4,7 +4,9 @@
 FROM php:5.6-fpm-alpine
 MAINTAINER Wojtek Zalewski <wojtek@neverbland.com>
 
-LABEL Description="This image is used to run Silex based apps" Vendor="Wtk" Version="0.0.1"
+LABEL   Description="This image is used to run Silex based apps" \
+        Vendor="Wtk" \
+        Version="0.0.1"
 
 # Port we are going to expose
 EXPOSE 8080
@@ -40,13 +42,13 @@ RUN rm -rf \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Setting up default working directory
-WORKDIR /usr/src/slate
+WORKDIR /usr/src/silex
 
 # Lets add composer file in order to install deps
-ADD app/composer.json /usr/src/slate
+ADD app/composer.json /usr/src/silex
 
 # Install dependencies
-RUN composer install --prefer-dist --working-dir=/usr/src/slate
+RUN composer install --prefer-dist --working-dir=/usr/src/silex
 
 # Enabling Xdebug
 # It's done bit later because of composer.
@@ -55,6 +57,6 @@ RUN composer install --prefer-dist --working-dir=/usr/src/slate
 RUN docker-php-ext-enable xdebug.so
 
 # Lets mount volumes
-VOLUME /usr/src/slate/app
+VOLUME /usr/src/silex/app
 
 
